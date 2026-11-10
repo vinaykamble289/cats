@@ -1,0 +1,273 @@
+@import "tailwindcss";
+
+/*
+ * cats design tokens
+ * ----------------------
+ * Warm "paper" neutrals, a deep pine brand, and muted status hues that sit
+ * together on one page without fighting. The default Tailwind scales used
+ * across the app (zinc, emerald, amber, red, sky, violet, rose…) are remapped
+ * here so every screen inherits the same palette.
+ */
+@theme {
+  --font-sans:
+    "Instrument Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+  --font-display: "Newsreader", ui-serif, Georgia, "Times New Roman", serif;
+
+  /* Neutrals — warm stone, slightly desaturated */
+  --color-zinc-50: #faf9f7;
+  --color-zinc-100: #f2f0ec;
+  --color-zinc-200: #e5e2dc;
+  --color-zinc-300: #d2cec6;
+  --color-zinc-400: #9c978d;
+  --color-zinc-500: #736e65;
+  --color-zinc-600: #58544c;
+  --color-zinc-700: #423f39;
+  --color-zinc-800: #2c2a26;
+  --color-zinc-900: #1d1c19;
+  --color-zinc-950: #121110;
+
+  /* Brand — pine */
+  --color-brand-50: #eff5f2;
+  --color-brand-100: #d9e9e1;
+  --color-brand-200: #b3d2c4;
+  --color-brand-300: #85b5a1;
+  --color-brand-400: #55947d;
+  --color-brand-500: #337a63;
+  --color-brand-600: #22634f;
+  --color-brand-700: #1c5142;
+  --color-brand-800: #174236;
+  --color-brand-900: #12352c;
+  --color-brand-950: #0b221c;
+
+  /* Success — leaf (yellower than pine so it never reads as "brand") */
+  --color-emerald-50: #f0f6ec;
+  --color-emerald-100: #ddecd4;
+  --color-emerald-200: #bdd9ae;
+  --color-emerald-300: #97c283;
+  --color-emerald-400: #6fa659;
+  --color-emerald-500: #548c3e;
+  --color-emerald-600: #437332;
+  --color-emerald-700: #375c2a;
+  --color-emerald-800: #2d4a23;
+  --color-emerald-900: #253d1e;
+
+  /* Warning — ochre */
+  --color-amber-50: #fbf5e8;
+  --color-amber-100: #f5e6c6;
+  --color-amber-200: #ebcf95;
+  --color-amber-300: #e0b664;
+  --color-amber-400: #d29f3f;
+  --color-amber-500: #bb862a;
+  --color-amber-600: #9a6b20;
+  --color-amber-700: #7a531b;
+  --color-amber-800: #5f4118;
+  --color-amber-900: #4d3516;
+
+  /* Danger — brick */
+  --color-red-50: #fbf1ef;
+  --color-red-100: #f6dfda;
+  --color-red-200: #ecbdb4;
+  --color-red-300: #df9384;
+  --color-red-400: #cf6a58;
+  --color-red-500: #bc4e3b;
+  --color-red-600: #a23f2e;
+  --color-red-700: #853427;
+  --color-red-800: #6b2b21;
+  --color-red-900: #58251d;
+
+  /* Info — slate blue */
+  --color-sky-50: #eff3f8;
+  --color-sky-100: #dbe5f0;
+  --color-sky-200: #b9cce1;
+  --color-sky-300: #8fadcd;
+  --color-sky-400: #6890b8;
+  --color-sky-500: #4c77a3;
+  --color-sky-600: #3d628a;
+  --color-sky-700: #334f6f;
+  --color-sky-800: #2a405a;
+  --color-sky-900: #23354a;
+
+  /* Accent — plum (AI features, drafts) */
+  --color-violet-50: #f6f2f6;
+  --color-violet-100: #ebe1eb;
+  --color-violet-200: #d6c3d6;
+  --color-violet-300: #bc9fbc;
+  --color-violet-400: #a07ba1;
+  --color-violet-500: #876087;
+  --color-violet-600: #704e71;
+  --color-violet-700: #5c405c;
+  --color-violet-800: #4a344a;
+  --color-violet-900: #3d2b3d;
+
+  /* Dusty rose */
+  --color-rose-50: #fbf1f1;
+  --color-rose-100: #f5e0e0;
+  --color-rose-200: #eac0c1;
+  --color-rose-500: #b65d63;
+  --color-rose-600: #9a4a50;
+  --color-rose-700: #7d3c41;
+
+  /* Shape & depth — mostly borders, very little shadow */
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.625rem;
+  --radius-2xl: 0.875rem;
+  --shadow-xs: 0 1px 0 0 rgb(29 28 25 / 0.04);
+  --shadow-sm: 0 1px 2px 0 rgb(29 28 25 / 0.06);
+  --shadow-lg:
+    0 8px 24px -6px rgb(29 28 25 / 0.12), 0 2px 6px -2px rgb(29 28 25 / 0.06);
+  --shadow-xl: 0 16px 40px -12px rgb(29 28 25 / 0.18);
+  --shadow-2xl: 0 24px 60px -16px rgb(29 28 25 / 0.25);
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-zinc-50 text-zinc-900 antialiased;
+    font-size: 15px;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    @apply bg-brand-100 text-brand-900;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+  }
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: none;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  /* Figures in tables, stats and money line up */
+  td,
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Serif display face for page titles and candidate-facing headlines */
+  .font-display {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    letter-spacing: -0.01em;
+  }
+
+  /* Rendered rich text (job descriptions, emails, AI output) */
+  .prose-lite {
+    @apply text-[15px] leading-relaxed text-zinc-700;
+  }
+  .prose-lite h1,
+  .prose-lite h2,
+  .prose-lite h3 {
+    @apply mt-5 mb-2 font-semibold text-zinc-900;
+  }
+  .prose-lite h1 {
+    @apply text-lg;
+  }
+  .prose-lite h2 {
+    @apply text-base;
+  }
+  .prose-lite h3 {
+    @apply text-[15px];
+  }
+  .prose-lite p {
+    @apply my-2;
+  }
+  .prose-lite ul {
+    @apply my-2 list-disc pl-5;
+  }
+  .prose-lite ol {
+    @apply my-2 list-decimal pl-5;
+  }
+  .prose-lite li {
+    @apply my-0.5;
+  }
+  .prose-lite li::marker {
+    @apply text-zinc-400;
+  }
+  .prose-lite a {
+    @apply text-brand-700 underline decoration-brand-300 underline-offset-2 hover:decoration-brand-600;
+  }
+  .prose-lite strong {
+    @apply font-semibold text-zinc-900;
+  }
+}
+
+/* Thin scrollbars for kanban / panels */
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-zinc-300) transparent;
+}
+.scroll-thin::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background: var(--color-zinc-300);
+  border-radius: 9999px;
+}
+.scroll-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Gentle entrance for routed pages */
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.page-in {
+  animation: page-in 180ms ease-out both;
+}
+
+/* Toasts (sonner) tuned to the palette. Extra :root raises specificity over sonner's injected styles. */
+:root [data-sonner-toaster][data-sonner-theme="light"] {
+  --normal-bg: #fff;
+  --normal-border: var(--color-zinc-200);
+  --normal-text: var(--color-zinc-900);
+  --success-bg: var(--color-emerald-50);
+  --success-border: var(--color-emerald-200);
+  --success-text: var(--color-emerald-800);
+  --info-bg: var(--color-sky-50);
+  --info-border: var(--color-sky-200);
+  --info-text: var(--color-sky-800);
+  --warning-bg: var(--color-amber-50);
+  --warning-border: var(--color-amber-200);
+  --warning-text: var(--color-amber-800);
+  --error-bg: var(--color-red-50);
+  --error-border: var(--color-red-200);
+  --error-text: var(--color-red-800);
+  --border-radius: 10px;
+  font-family: var(--font-sans);
+}
+:root [data-sonner-toast] {
+  font-size: 14px;
+  box-shadow: var(--shadow-lg);
+}

@@ -1,0 +1,30 @@
+{
+  "name": "@hireflow/jobs-service",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsup",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hireflow/shared": "*",
+    "fastify": "^5.2.1"
+  },
+  "tsup": {
+    "entry": [
+      "src/index.ts"
+    ],
+    "format": [
+      "esm"
+    ],
+    "target": "node20",
+    "clean": true,
+    "splitting": false,
+    "noExternal": [
+      "@hireflow/shared"
+    ]
+  }
+}

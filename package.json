@@ -1,0 +1,33 @@
+{
+  "name": "hireflow",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HireFlow - end-to-end recruitment platform (microservices)",
+  "workspaces": [
+    "packages/*",
+    "services/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "dev:services": "node scripts/dev.mjs --no-web",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "db:migrate": "node scripts/migrate.mjs",
+    "start": "node scripts/start.mjs",
+    "admin:create": "node scripts/create-admin.mjs"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "@types/node": "^22.10.0",
+    "concurrently": "^9.1.2",
+    "dotenv": "^16.4.7",
+    "postgres": "^3.4.5",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "@hireflow/talent-service",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsup",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hireflow/shared": "*",
+    "fastify": "^5.2.1",
+    "unpdf": "^1.0.0",
+    "mammoth": "^1.9.0",
+    "imapflow": "^2.0.0",
+    "mailparser": "^3.7.2"
+  },
+  "devDependencies": {
+    "@types/mailparser": "^3.4.5"
+  },
+  "tsup": {
+    "entry": [
+      "src/index.ts"
+    ],
+    "format": [
+      "esm"
+    ],
+    "target": "node20",
+    "clean": true,
+    "splitting": false,
+    "noExternal": [
+      "@hireflow/shared"
+    ]
+  }
+}

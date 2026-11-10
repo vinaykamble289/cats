@@ -1,0 +1,126 @@
+# Production-style deployment of the whole platform.
+#   docker compose up -d --build
+# Reads secrets from .env. Only the gateway (4000) and web (8080) are exposed;
+# the services talk to each other on the private compose network.
+#
+# Database access: only the `db` service connects to Supabase (DB_POOL_MAX
+# connections, default 1). Every other service sends its queries to `db` and
+# caches reads in Redis (one logical Redis database per service).
+
+x-service: &service
+  build:
+    context: .
+    dockerfile: Dockerfile
+  env_file: .env
+  restart: unless-stopped
+  environment: &service-env
+    NODE_ENV: production
+    IDENTITY_URL: http://identity:4001
+    JOBS_URL: http://jobs:4002
+    TALENT_URL: http://talent:4003
+    ASSESSMENT_URL: http://assessment:4004
+    INTERVIEW_URL: http://interview:4005
+    OFFER_URL: http://offer:4006
+    ONBOARDING_URL: http://onboarding:4007
+    AI_URL: http://ai:4008
+    NOTIFICATION_URL: http://notification:4009
+    DB_URL: http://db:4010
+    REDIS_URL: redis://redis:6379
+  healthcheck:
+    test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:$${PORT:-$${GATEWAY_PORT:-4000}}/health >/dev/null 2>&1 || exit 1"]
+    interval: 30s
+    timeout: 5s
+    retries: 3
+
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    # Pure cache: no persistence. volatile-lru only evicts keys with a TTL (cache entries),
+    # never the table-version hash used for invalidation.
+    command: ["redis-server", "--maxmemory", "256mb", "--maxmemory-policy", "volatile-lru", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # Central DB service: the only process with a connection to Supabase Postgres.
+  db:
+    <<: *service
+    build: { context: ., dockerfile: Dockerfile, args: { SERVICE: db } }
+    environment: { <<: *service-env, PORT: "4010" }
+    depends_on:
+      redis: { condition: service_healthy }
+
+  gateway:
+    <<: *service
+    build: { context: ., dockerfile: Dockerfile, args: { SERVICE: gateway } }
+    environment: { <<: *service-env, GATEWAY_PORT: "4000" }
+    ports: ["4000:4000"]
+
+  identity:
+    <<: *service
+    build: { context: ., dockerfile: Dockerfile, args: { SERVICE: identity } }
+    environment: { <<: *service-env, PORT: "4001" }
+    depends_on: [db]
+
+  jobs:
+    <<: *service
+    build: { context: ., dockerfile: Dockerfile, args: { SERVICE: jobs } }
+    environment: { <<: *service-env, PORT: "4002" }
+    depends_on: [db]
+
+  talent:
+    <<: *service
+    build: { context: ., dockerfile: Dockerfile, args: { SERVICE: talent } }
+    environment: { <<: *service-env, PORT: "4003" }
+    depends_on: [db]
+
+  assessment:
+    <<: *service
+    build: { context: ., dockerfile: Dockerfile, args: { SERVICE: assessment } }
+    environment: { <<: *service-env, PORT: "4004" }
+    depends_on: [db]
+
+  interview:
+    <<: *service
+    build: { context: ., dockerfile: Dockerfile, args: { SERVICE: interview } }
+    environment: { <<: *service-env, PORT: "4005" }
+    depends_on: [db]
+
+  offer:
+    <<: *service
+    build: { context: ., dockerfile: Dockerfile, args: { SERVICE: offer } }
+    environment: { <<: *service-env, PORT: "4006" }
+    depends_on: [db]
+
+  onboarding:
+    <<: *service
+    build: { context: ., dockerfile: Dockerfile, args: { SERVICE: onboarding } }
+    environment: { <<: *service-env, PORT: "4007" }
+    depends_on: [db]
+
+  ai:
+    <<: *service
+    build: { context: ., dockerfile: Dockerfile, args: { SERVICE: ai } }
+    environment: { <<: *service-env, PORT: "4008" }
+
+  notification:
+    <<: *service
+    build: { context: ., dockerfile: Dockerfile, args: { SERVICE: notification } }
+    environment: { <<: *service-env, PORT: "4009" }
+    depends_on: [db]
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
+        VITE_COMPANY_NAME: ${VITE_COMPANY_NAME}
+    restart: unless-stopped
+    ports: ["8080:80"]
+    depends_on: [gateway]
